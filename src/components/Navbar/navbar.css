@@ -1,0 +1,16 @@
+.navbar-toggler {
+  border-color: rgba(249, 243, 243, 0.8);
+}
+
+.navbar-toggler-icon {
+  color: rgba(249, 243, 243, 0.8);
+}
+
+@media (max-width: 768px) {
+  .navbar-toggler {
+    margin-top: 3rem;
+  }
+  .nav-link {
+    margin-bottom: 0.5rem;
+  }
+}

@@ -7,7 +7,6 @@ export default function GuestLayout({ children }) {
     <>
       <NavigationBar />
       {children}
-      <Footer />
     </>
   );
 }

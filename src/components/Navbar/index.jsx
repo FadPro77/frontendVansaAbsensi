@@ -6,12 +6,13 @@ import Offcanvas from "react-bootstrap/Offcanvas";
 import Image from "react-bootstrap/Image";
 import Dropdown from "react-bootstrap/Dropdown";
 import { Link, useNavigate } from "@tanstack/react-router";
-import logoNav from "../../assets/img/om_him-removebg-preview 1.png";
+import logoNav from "../../assets/img/logoNoBg.png";
 import { useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setToken, setUser } from "../../redux/slices/auth";
 import { profile } from "../../service/auth";
 import { useQuery } from "@tanstack/react-query";
+import "./Navbar.css";
 
 const NavigationBar = () => {
   const dispatch = useDispatch();
@@ -49,7 +50,9 @@ const NavigationBar = () => {
       {["xxl"].map((expand) => (
         <Navbar
           collapseOnSelect
-          expand="lg"
+          expand="md"
+          bg="dark"
+          variant="dark"
           className="py-3"
           style={{
             position: "absolute",
@@ -57,35 +60,34 @@ const NavigationBar = () => {
             left: 0,
             right: 0,
             zIndex: 999,
-            backgroundColor: "rgba(255, 255, 255, 0)",
-            backdropFilter: "none",
-            boxShadow: "none",
-            borderBottom: "none",
+            backgroundColor: "rgba(18, 17, 17, 0.88)",
           }}
         >
-          <Container
-            style={{
-              borderBottom: "3px solid white", // Pindahkan ke Container
-              width: "90%", // Atur panjang border di sini
-              height: "9rem",
-              margin: "0 auto", // Tengahin
-            }}
-          >
-            <Navbar.Brand
-              as={Link}
-              to="/"
-              style={{ cursor: "pointer" }}
-              className="fw-bold"
-            >
-              <img
-                src={logoNav}
-                width="180px"
-                height="180px"
-                className="d-inline-block align-center"
-                alt="Logo dummy"
-              />
-            </Navbar.Brand>
-            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+          <Container>
+            <div className="d-flex align-items-center me-auto">
+              <Navbar.Brand
+                as={Link}
+                to="/"
+                className="d-flex align-items-center"
+                style={{ cursor: "pointer" }}
+              >
+                <img
+                  src={logoNav}
+                  className="img-fluid d-inline-block"
+                  alt="Logo dummy"
+                  style={{ maxHeight: "60px" }}
+                />
+
+                <span className="ms-2 fs-6 fw-bold text-white">
+                  PT VANSA NUSA PROPERTI
+                </span>
+              </Navbar.Brand>
+            </div>
+
+            <Navbar.Toggle
+              aria-controls="responsive-navbar-nav"
+              className="custom-toggler"
+            />
             <Navbar.Collapse id="responsive-navbar-nav">
               <Nav className="mx-auto ">
                 <Nav.Link
@@ -95,6 +97,22 @@ const NavigationBar = () => {
                   className="fw-bold text-white me-5"
                 >
                   Beranda
+                </Nav.Link>
+                <Nav.Link
+                  as={Link}
+                  to="/presensi"
+                  style={{ cursor: "pointer" }}
+                  className="fw-bold text-white me-5"
+                >
+                  Presensi
+                </Nav.Link>
+                <Nav.Link
+                  as={Link}
+                  to="/"
+                  style={{ cursor: "pointer" }}
+                  className="fw-bold text-white me-5"
+                >
+                  Cuti
                 </Nav.Link>
               </Nav>
               <Nav>
@@ -110,31 +128,22 @@ const NavigationBar = () => {
                         boxShadow: "0 0 10px rgba(0,0,0,0.1)",
                       }}
                     >
-                      <div
-                        className="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center me-2"
+                      <Image
+                        src={user?.pegawai?.foto}
+                        fluid
+                        className="me-3"
                         style={{
-                          width: "35px",
-                          height: "35px",
-                          fontSize: "1rem",
-                          fontWeight: "bold",
+                          maxHeight: "40px",
+                          display: "inline-block",
+                          overflow: "hidden",
+                          borderRadius: "50%",
                         }}
-                      >
-                        {user?.nama_lengkap?.charAt(0)?.toUpperCase() ?? ""}
-                      </div>
+                      />
+
                       {user?.nama_lengkap ?? ""}
                     </Dropdown.Toggle>
 
                     <Dropdown.Menu>
-                      <Dropdown.Item as={Link} to="/user">
-                        User
-                      </Dropdown.Item>
-                      <Dropdown.Item as={Link} to="/pesanan">
-                        Pesanan
-                      </Dropdown.Item>
-                      <Dropdown.Item as={Link} to="/history">
-                        Riwayat
-                      </Dropdown.Item>
-                      <Dropdown.Divider />
                       <Dropdown.Item onClick={logout}>Logout</Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
