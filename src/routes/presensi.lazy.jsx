@@ -3,12 +3,12 @@ import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useRef } from "react";
 import GuestLayout from "../layouts/GuestLayout";
-import ScreenHomepage from "../components/Homepage/ScreenHomepage";
+import ScreenPresensi from "../components/Presensi/ScreenPresensi";
 import { motion } from "motion/react";
 import bgHome from "../assets/img/div-main-container.png";
 import Protected from "../components/Auth/Protected";
 
-export const Route = createLazyFileRoute("/")({
+export const Route = createLazyFileRoute("/presensi")({
   component: () => (
     <Protected roles={[1, 2]}>
       <Index />
@@ -17,11 +17,11 @@ export const Route = createLazyFileRoute("/")({
 });
 
 function Index() {
-  const [openHomepage, setOpenHomepage] = useState(true);
+  const [openPresensi, setOpenPresensi] = useState(true);
 
   return (
-    <GuestLayout openHomepage={openHomepage} setOpenHomepage={setOpenHomepage}>
-      {openHomepage && <ScreenHomepage />}
+    <GuestLayout openPresensi={openPresensi} setOpenPresensi={setOpenPresensi}>
+      {openPresensi && <ScreenPresensi />}
     </GuestLayout>
   );
 }

@@ -5,8 +5,7 @@ import { setToken } from "../../redux/slices/auth";
 import { login } from "../../service/auth";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { Container, Row, Col, Button, Form } from "react-bootstrap";
-import bgHome from "../../assets/img/div-main-container.png";
+import { Container, Row, Col } from "react-bootstrap";
 import logo from "../../assets/img/logo2.jpg";
 
 function LoginScreen() {
@@ -38,61 +37,69 @@ function LoginScreen() {
 
   return (
     <section
-      className="d-flex justify-content-center align-items-center vh-100 position-relative overflow-hidden"
+      className="flex justify-center items-center h-screen relative overflow-hidden"
       style={{
         backgroundImage: `url(${logo})`,
         backgroundSize: "cover",
         backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
       }}
     >
       <Container>
-        <Row className="justify-content-center position-relative ">
+        <Row className="justify-content-center relative">
           <Col
             md={6}
             lg={4}
+            className="rounded-2xl shadow-xl p-6 relative z-10"
             style={{
               backdropFilter: "blur(10px)",
               backgroundColor: "rgba(26, 33, 41, 0.49)",
-
               borderRadius: "0.5rem",
             }}
-            className=" rounded-4 shadow-lg p-4 position-relative"
           >
-            <div className="text-center mt-2">
-              <h2 className="fw-bold text-white">Selamat Datang</h2>
+            {/* Title */}
+            <div className="text-center mt-3">
+              <h2 className="font-bold text-white">Selamat Datang</h2>
             </div>
 
-            <Form onSubmit={onSubmit} className="z-3 p-4">
-              <Form.Group className="mb-3 text-white">
-                <Form.Label>Username</Form.Label>
-                <Form.Control
+            {/* Form */}
+            <form onSubmit={onSubmit} className="z-10 p-2 mt-4">
+              <div className="mb-4 text-white">
+                <label className="block mb-1">Username</label>
+                <input
                   type="text"
                   placeholder="Enter username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
+                  className="w-full px-3 py-2 rounded-lg bg-white  outline-none"
                 />
-              </Form.Group>
+              </div>
 
-              <Form.Group className="mb-3 text-white">
-                <Form.Label>Password</Form.Label>
-                <Form.Control
+              <div className="mb-4 text-white">
+                <label className="block mb-1">Password</label>
+                <input
                   type="password"
                   placeholder="Enter password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  className="w-full px-3 py-2 rounded-lg bg-white outline-none"
                 />
-              </Form.Group>
+              </div>
 
-              <Button variant="dark" type="submit" className="w-100 mt-3">
-                Login
-              </Button>
-            </Form>
+              <div className="text-center">
+                <button
+                  type="submit"
+                  className="w-full py-2 mt-3 mb-4 rounded-full bg-dark text-white"
+                >
+                  Login
+                </button>
+              </div>
+            </form>
           </Col>
 
-          <div className="decoration position-absolute top-50 z-n1 start-100 translate-middle">
+          {/* Decorative Element (jika ingin tetap dipakai) */}
+          <div className="position-absolute top-50 start-100 translate-middle z-n1">
             <img src="img/car.png" alt="Decoration" className="img-fluid" />
           </div>
         </Row>
