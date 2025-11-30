@@ -1,11 +1,10 @@
 /* eslint-disable no-unused-vars */
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { useRef } from "react";
+
 import GuestLayout from "../layouts/GuestLayout";
 import ScreenHomepage from "../components/Homepage/ScreenHomepage";
-import { motion } from "motion/react";
-import bgHome from "../assets/img/div-main-container.png";
+
 import Protected from "../components/Auth/Protected";
 
 export const Route = createLazyFileRoute("/")({
