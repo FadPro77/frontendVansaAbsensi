@@ -18,6 +18,7 @@ import { setUser } from "../../redux/slices/auth";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
+import defaultLogo from "../../assets/img/logoNoBg.png";
 
 const ScreenHomepage = () => {
   const dispatch = useDispatch();
@@ -128,7 +129,7 @@ const ScreenHomepage = () => {
               {/* Gambar kiri */}
               <Col md={4}>
                 <Card.Img
-                  src={user?.pegawai?.foto || "/path/to/default-image.jpg"}
+                  src={user?.pegawai?.foto || defaultLogo}
                   style={{
                     maxHeight: "100%",
                     width: "100%",
@@ -151,7 +152,7 @@ const ScreenHomepage = () => {
                     NAMA:
                   </Card.Text>
                   <Card.Text className="mb-4 fs-5 fw-lighter">
-                    {user?.pegawai?.nama}
+                    {user?.pegawai?.nama || "ADMIN"}
                   </Card.Text>
 
                   <Card.Text
@@ -161,7 +162,7 @@ const ScreenHomepage = () => {
                     JABATAN:
                   </Card.Text>
                   <Card.Text className="mb-4 fs-5 fw-lighter">
-                    {user?.pegawai?.jabatan}
+                    {user?.pegawai?.jabatan || "ADMIN"}
                   </Card.Text>
 
                   <Card.Text
@@ -171,7 +172,7 @@ const ScreenHomepage = () => {
                     TANGGAL MASUK:
                   </Card.Text>
                   <Card.Text className="mb-4 fs-5 fw-lighter">
-                    {formatDate(user?.pegawai?.tanggal_masuk)}
+                    {formatDate(user?.pegawai?.tanggal_masuk) || "-"}
                   </Card.Text>
                 </Card.Body>
               </Col>

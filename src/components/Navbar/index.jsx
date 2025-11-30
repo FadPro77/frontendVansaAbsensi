@@ -108,7 +108,7 @@ const NavigationBar = () => {
                 </Nav.Link>
                 <Nav.Link
                   as={Link}
-                  to="/"
+                  to="/leaves"
                   style={{ cursor: "pointer" }}
                   className="fw-bold text-white me-5"
                 >

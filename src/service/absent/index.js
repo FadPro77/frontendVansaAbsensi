@@ -60,7 +60,6 @@ export const createAbsent = async (request) => {
   });
 
   const result = await response.json();
-  console.log("Create Absent =", result);
   return result;
 };
 

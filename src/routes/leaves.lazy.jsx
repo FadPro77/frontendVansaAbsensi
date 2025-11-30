@@ -2,10 +2,10 @@
 import { createLazyFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import GuestLayout from "../layouts/GuestLayout";
-import ScreenPresensi from "../components/Presensi/ScreenPresensi";
+import ScreenLeaves from "../components/Leaves/ScreenLeaves";
 import Protected from "../components/Auth/Protected";
 
-export const Route = createLazyFileRoute("/presensi")({
+export const Route = createLazyFileRoute("/leaves")({
   component: () => (
     <Protected roles={[1, 2]}>
       <Index />
@@ -14,11 +14,11 @@ export const Route = createLazyFileRoute("/presensi")({
 });
 
 function Index() {
-  const [openPresensi, setOpenPresensi] = useState(true);
+  const [openLeaves, setOpenLeaves] = useState(true);
 
   return (
-    <GuestLayout openPresensi={openPresensi} setOpenPresensi={setOpenPresensi}>
-      {openPresensi && <ScreenPresensi />}
+    <GuestLayout openLeaves={openLeaves} setOpenLeaves={setOpenLeaves}>
+      {openLeaves && <ScreenLeaves />}
     </GuestLayout>
   );
 }
