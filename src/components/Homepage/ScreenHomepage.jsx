@@ -17,14 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../redux/slices/auth";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { getEmployees } from "../../service/employee";
-import { profile } from "../../service/auth";
-import { getAbsent, getAbsentById, createAbsent } from "../../service/absent";
-import { useDispatch, useSelector } from "react-redux";
-import { setUser } from "../../redux/slices/auth";
-import { useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
+
 import defaultLogo from "../../assets/img/logoNoBg.png";
 
 const ScreenHomepage = () => {
