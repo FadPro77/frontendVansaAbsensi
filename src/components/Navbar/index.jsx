@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setToken, setUser } from "../../redux/slices/auth";
 import { profile } from "../../service/auth";
 import { useQuery } from "@tanstack/react-query";
-import "./Navbar.css";
+import "./navbar.css";
 
 const NavigationBar = () => {
   const dispatch = useDispatch();
