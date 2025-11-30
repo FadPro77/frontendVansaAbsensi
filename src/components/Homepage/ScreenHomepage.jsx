@@ -83,12 +83,24 @@ const ScreenHomepage = () => {
     });
   };
 
-  const handleAbsentMasuk = async () => {
+  const todayStatus =
+    queryTodayAbsent?.data && queryTodayAbsent.data.length > 0
+      ? queryTodayAbsent.data[0].status
+      : "-";
+
+  const doneAbsent = queryTodayAbsent?.data && queryTodayAbsent.data.length > 0;
+
+  const handleAbsent = async () => {
     try {
       const now = new Date();
+      const tanggalLocal = new Date(
+        now.getTime() - now.getTimezoneOffset() * 60000
+      )
+        .toISOString()
+        .split("T")[0];
 
       const jam = now.toLocaleTimeString("id-ID", { hour12: false });
-      const tanggal = new Date().toLocaleDateString("en-CA");
+      const tanggal = tanggalLocal;
 
       const batas = new Date();
       batas.setHours(9, 0, 0, 0);
@@ -174,6 +186,18 @@ const ScreenHomepage = () => {
                   <Card.Text className="mb-4 fs-5 fw-lighter">
                     {formatDate(user?.pegawai?.tanggal_masuk) || "-"}
                   </Card.Text>
+
+                  <Card.Text
+                    className="fw-semibold fs-3"
+                    style={{ marginBottom: "0rem" }}
+                  >
+                    STATUS:
+                  </Card.Text>
+                  <Card.Text className="mb-4 fs-5 fw-lighter">
+                    <Card.Text className="mb-4 fs-5 fw-lighter">
+                      {todayStatus}
+                    </Card.Text>
+                  </Card.Text>
                 </Card.Body>
               </Col>
 
@@ -193,13 +217,16 @@ const ScreenHomepage = () => {
 
                 {/* Tombol */}
                 <div className="mt-4 d-grid gap-3">
-                  <Button
-                    variant="success"
-                    size="lg"
-                    onClick={handleAbsentMasuk}
-                  >
-                    Absensi Masuk
-                  </Button>
+                  {user?.role == 2 && (
+                    <Button
+                      variant="success"
+                      size="lg"
+                      onClick={handleAbsent}
+                      disabled={doneAbsent}
+                    >
+                      Absensi Masuk
+                    </Button>
+                  )}
                 </div>
               </Col>
             </Row>

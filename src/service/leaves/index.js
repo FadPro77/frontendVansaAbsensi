@@ -80,3 +80,18 @@ export const createLeaves = async (request) => {
   const result = await response.json();
   return result;
 };
+
+export const updateLeaves = async (id, payload) => {
+  const token = localStorage.getItem("token");
+
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/leaves/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  return await response.json();
+};

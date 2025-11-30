@@ -19,10 +19,7 @@ import {
   createAbsent,
   updateAbsent,
 } from "../../service/absent";
-import { useDispatch, useSelector } from "react-redux";
-import { setUser } from "../../redux/slices/auth";
-import { useNavigate } from "@tanstack/react-router";
-import { Link } from "@tanstack/react-router";
+import { useSelector } from "react-redux";
 
 const ScreenPresensi = () => {
   const { token, user } = useSelector((state) => state.auth);
