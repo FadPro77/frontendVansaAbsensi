@@ -17,7 +17,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../redux/slices/auth";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
+
+import defaultLogo from "../../assets/img/logoNoBg.png";
 
 const ScreenHomepage = () => {
   const dispatch = useDispatch();
@@ -82,12 +83,24 @@ const ScreenHomepage = () => {
     });
   };
 
-  const handleAbsentMasuk = async () => {
+  const todayStatus =
+    queryTodayAbsent?.data && queryTodayAbsent.data.length > 0
+      ? queryTodayAbsent.data[0].status
+      : "-";
+
+  const doneAbsent = queryTodayAbsent?.data && queryTodayAbsent.data.length > 0;
+
+  const handleAbsent = async () => {
     try {
       const now = new Date();
+      const tanggalLocal = new Date(
+        now.getTime() - now.getTimezoneOffset() * 60000
+      )
+        .toISOString()
+        .split("T")[0];
 
       const jam = now.toLocaleTimeString("id-ID", { hour12: false });
-      const tanggal = new Date().toLocaleDateString("en-CA");
+      const tanggal = tanggalLocal;
 
       const batas = new Date();
       batas.setHours(9, 0, 0, 0);
@@ -128,7 +141,7 @@ const ScreenHomepage = () => {
               {/* Gambar kiri */}
               <Col md={4}>
                 <Card.Img
-                  src={user?.pegawai?.foto || "/path/to/default-image.jpg"}
+                  src={user?.pegawai?.foto || defaultLogo}
                   style={{
                     maxHeight: "100%",
                     width: "100%",
@@ -151,7 +164,7 @@ const ScreenHomepage = () => {
                     NAMA:
                   </Card.Text>
                   <Card.Text className="mb-4 fs-5 fw-lighter">
-                    {user?.pegawai?.nama}
+                    {user?.pegawai?.nama || "ADMIN"}
                   </Card.Text>
 
                   <Card.Text
@@ -161,7 +174,7 @@ const ScreenHomepage = () => {
                     JABATAN:
                   </Card.Text>
                   <Card.Text className="mb-4 fs-5 fw-lighter">
-                    {user?.pegawai?.jabatan}
+                    {user?.pegawai?.jabatan || "ADMIN"}
                   </Card.Text>
 
                   <Card.Text
@@ -171,7 +184,19 @@ const ScreenHomepage = () => {
                     TANGGAL MASUK:
                   </Card.Text>
                   <Card.Text className="mb-4 fs-5 fw-lighter">
-                    {formatDate(user?.pegawai?.tanggal_masuk)}
+                    {formatDate(user?.pegawai?.tanggal_masuk) || "-"}
+                  </Card.Text>
+
+                  <Card.Text
+                    className="fw-semibold fs-3"
+                    style={{ marginBottom: "0rem" }}
+                  >
+                    STATUS:
+                  </Card.Text>
+                  <Card.Text className="mb-4 fs-5 fw-lighter">
+                    <Card.Text className="mb-4 fs-5 fw-lighter">
+                      {todayStatus}
+                    </Card.Text>
                   </Card.Text>
                 </Card.Body>
               </Col>
@@ -192,13 +217,16 @@ const ScreenHomepage = () => {
 
                 {/* Tombol */}
                 <div className="mt-4 d-grid gap-3">
-                  <Button
-                    variant="success"
-                    size="lg"
-                    onClick={handleAbsentMasuk}
-                  >
-                    Absensi Masuk
-                  </Button>
+                  {user?.role == 2 && (
+                    <Button
+                      variant="success"
+                      size="lg"
+                      onClick={handleAbsent}
+                      disabled={doneAbsent}
+                    >
+                      Absensi Masuk
+                    </Button>
+                  )}
                 </div>
               </Col>
             </Row>
