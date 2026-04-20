@@ -64,3 +64,32 @@ export const createEmployee = async (request) => {
   const result = await response.json();
   return result;
 };
+
+export const updateEmployee = async (id, request) => {
+  const token = localStorage.getItem("token");
+
+  const formData = new FormData();
+  formData.append("nip", request.nip);
+  formData.append("nama", request.nama);
+  formData.append("jabatan", request.jabatan);
+  formData.append("status", request.status);
+  formData.append("tanggal_masuk", request.tanggal_masuk);
+
+  if (request.foto) {
+    formData.append("foto", request.foto);
+  }
+
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/employees/${id}`,
+    {
+      method: "PUT",
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    },
+  );
+
+  const result = await response.json();
+  return result;
+};

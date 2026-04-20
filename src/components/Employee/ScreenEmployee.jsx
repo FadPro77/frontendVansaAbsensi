@@ -19,11 +19,13 @@ import {
   getEmployees,
   getEmployeeById,
   createEmployee,
+  updateEmployee,
 } from "../../service/employee";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../redux/slices/auth";
 import { useNavigate } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
+import { IoDocumentText, IoSwapVerticalSharp } from "react-icons/io5";
 
 const ScreenEmployee = () => {
   const { token } = useSelector((state) => state.auth);
@@ -34,6 +36,14 @@ const ScreenEmployee = () => {
     password: "",
     pegawaiId: "",
   });
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState(null);
+  const [searchNama, setSearchNama] = useState("");
+  const [searchNip, setSearchNip] = useState("");
+  const [sortNip, setSortNip] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   const [employeeForm, setEmployeeForm] = useState({
     nip: "",
     nama: "",
@@ -140,6 +150,74 @@ const ScreenEmployee = () => {
       </Card>
     );
   }
+
+  const handleEdit = (item) => {
+    setSelectedEmployeeId(item.id);
+
+    setEmployeeForm({
+      nip: item.nip,
+      nama: item.nama,
+      jabatan: item.jabatan,
+      status: item.status,
+      tanggal_masuk: item.tanggal_masuk?.split("T")[0],
+      foto: "",
+    });
+
+    setShowEditModal(true);
+  };
+
+  const { mutate: updateEmployeeMutate, isPending: loadingUpdate } =
+    useMutation({
+      mutationFn: ({ id, data }) => updateEmployee(id, data),
+      onSuccess: () => {
+        setShowEditModal(false);
+        queryClient.invalidateQueries(["employees"]);
+      },
+      onError: (err) => {
+        alert(err.message);
+      },
+    });
+
+  const handleSubmitEdit = (e) => {
+    e.preventDefault();
+
+    updateEmployeeMutate({
+      id: selectedEmployeeId,
+      data: employeeForm,
+    });
+  };
+
+  const filteredData = data?.data
+    ?.filter((item) => {
+      const matchNama = item.nama
+        .toLowerCase()
+        .includes(searchNama.toLowerCase());
+
+      const matchNip = item.nip.toLowerCase().includes(searchNip.toLowerCase());
+
+      return matchNama && matchNip;
+    })
+    ?.sort((a, b) => {
+      if (sortNip === "asc") {
+        return a.nip.localeCompare(b.nip);
+      }
+      if (sortNip === "desc") {
+        return b.nip.localeCompare(a.nip);
+      }
+      return 0;
+    });
+
+  const totalPages = Math.ceil((filteredData?.length || 0) / itemsPerPage);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedData = filteredData?.slice(
+    startIndex,
+    startIndex + itemsPerPage,
+  );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchNama, searchNip, sortNip]);
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error mengambil data</div>;
@@ -290,25 +368,65 @@ const ScreenEmployee = () => {
                 </Form>
               </Modal.Body>
             </Modal>
+
+            <Row className="mb-3">
+              <Col md={6}>
+                <Form.Control
+                  type="text"
+                  placeholder="Cari Nama..."
+                  value={searchNama}
+                  onChange={(e) => setSearchNama(e.target.value)}
+                />
+              </Col>
+
+              <Col md={6}>
+                <Form.Control
+                  type="text"
+                  placeholder="Cari NIP..."
+                  value={searchNip}
+                  onChange={(e) => setSearchNip(e.target.value)}
+                />
+              </Col>
+            </Row>
+
             <Card className="shadow-sm rounded-4">
               <Card.Body>
-                <Table striped bordered hover responsive>
+                <Table
+                  striped
+                  bordered
+                  hover
+                  responsive
+                  style={{ tableLayout: "fixed" }}
+                >
                   <thead>
                     <tr className="text-center">
-                      <th>No</th>
-                      <th>NIP</th>
+                      <th style={{ width: "50px" }}>No</th>
+                      <th style={{ cursor: "pointer", width: "125px" }}>
+                        NIP
+                        <span
+                          className="ms-1"
+                          onClick={() =>
+                            setSortNip(sortNip === "asc" ? "desc" : "asc")
+                          }
+                        >
+                          <IoSwapVerticalSharp size={20} />
+                        </span>
+                      </th>
                       <th>Nama</th>
                       <th>Jabatan</th>
                       <th>Status</th>
                       <th>Tanggal Masuk</th>
                       <th>Foto</th>
+                      <th style={{ width: "80px" }}>Edit</th>
                     </tr>
                   </thead>
 
                   <tbody>
-                    {data?.data?.map((item, index) => (
+                    {paginatedData?.map((item, index) => (
                       <tr key={item.id} className="text-center">
-                        <td>{index + 1}</td>
+                        <td size="sm" className="align-middle">
+                          {startIndex + index + 1}
+                        </td>
                         <td>{item.nip}</td>
                         <td>{item.nama}</td>
                         <td>{item.jabatan}</td>
@@ -321,10 +439,128 @@ const ScreenEmployee = () => {
                             style={{ maxWidth: "100px", maxHeight: "100px" }}
                           />
                         </td>
+                        <td className="text-center align-middle">
+                          <Button
+                            variant="none"
+                            onClick={() => handleEdit(item)}
+                          >
+                            <IoDocumentText size={40} />
+                          </Button>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </Table>
+                <div className="d-flex justify-content-between align-items-center mt-3">
+                  <span>
+                    Halaman {currentPage} dari {totalPages || 1}
+                  </span>
+
+                  <div>
+                    <Button
+                      variant="secondary"
+                      className="me-2"
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage((prev) => prev - 1)}
+                    >
+                      Previous
+                    </Button>
+
+                    <Button
+                      variant="primary"
+                      disabled={currentPage === totalPages || totalPages === 0}
+                      onClick={() => setCurrentPage((prev) => prev + 1)}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+                <Modal
+                  show={showEditModal}
+                  onHide={() => setShowEditModal(false)}
+                  centered
+                >
+                  <Modal.Header closeButton>
+                    <Modal.Title>Edit Pegawai</Modal.Title>
+                  </Modal.Header>
+
+                  <Modal.Body>
+                    <Form onSubmit={handleSubmitEdit}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>NIP</Form.Label>
+                        <Form.Control
+                          type="text"
+                          name="nip"
+                          value={employeeForm.nip}
+                          onChange={handleEmployeeChange}
+                          disabled
+                        />
+                      </Form.Group>
+
+                      <Form.Group className="mb-3">
+                        <Form.Label>Nama</Form.Label>
+                        <Form.Control
+                          type="text"
+                          name="nama"
+                          value={employeeForm.nama}
+                          onChange={handleEmployeeChange}
+                          required
+                        />
+                      </Form.Group>
+
+                      <Form.Group className="mb-3">
+                        <Form.Label>Jabatan</Form.Label>
+                        <Form.Control
+                          type="text"
+                          name="jabatan"
+                          value={employeeForm.jabatan}
+                          onChange={handleEmployeeChange}
+                        />
+                      </Form.Group>
+
+                      <Form.Group className="mb-3">
+                        <Form.Label>Status</Form.Label>
+                        <Form.Select
+                          name="status"
+                          value={employeeForm.status}
+                          onChange={handleEmployeeChange}
+                        >
+                          <option value="aktif">Aktif</option>
+                          <option value="nonaktif">Nonaktif</option>
+                        </Form.Select>
+                      </Form.Group>
+
+                      <Form.Group className="mb-3">
+                        <Form.Label>Tanggal Masuk</Form.Label>
+                        <Form.Control
+                          type="date"
+                          name="tanggal_masuk"
+                          value={employeeForm.tanggal_masuk}
+                          onChange={handleEmployeeChange}
+                        />
+                      </Form.Group>
+
+                      <Form.Group className="mb-3">
+                        <Form.Label>Foto</Form.Label>
+                        <Form.Control
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) =>
+                            setEmployeeForm({
+                              ...employeeForm,
+                              foto: e.target.files[0],
+                            })
+                          }
+                        />
+                      </Form.Group>
+
+                      <Button type="submit" disabled={loadingUpdate}>
+                        {loadingUpdate ? "Loading..." : "Update"}
+                      </Button>
+                    </Form>
+                  </Modal.Body>
+                </Modal>
+                ;
               </Card.Body>
             </Card>
           </Col>
