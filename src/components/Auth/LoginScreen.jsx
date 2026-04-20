@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setToken } from "../../redux/slices/auth";
 import { login } from "../../service/auth";
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { Container, Row, Col } from "react-bootstrap";
 import logo from "../../assets/img/logo2.jpg";
 
@@ -22,11 +22,33 @@ function LoginScreen() {
   const { mutate: loginUser } = useMutation({
     mutationFn: login,
     onSuccess: (data) => {
+      toast.success("Login berhasil!", {
+        position: "top-center",
+        autoClose: 3000,
+        style: {
+          padding: "16px",
+          background: "#4BB543",
+          color: "#FFFFFF",
+        },
+      });
       dispatch(setToken(data?.token));
-      navigate({ to: "/" });
+      setTimeout(() => {
+        navigate({ to: "/" });
+      }, 3000);
     },
     onError: (err) => {
-      toast.error(err?.message);
+      toast.error(err?.message, {
+        position: "top-center",
+        style: {
+          padding: "16px",
+          background: "#FF0000",
+          color: "#FFFFFF",
+        },
+        iconTheme: {
+          primary: "#fff",
+          secondary: "#FF0000",
+        },
+      });
     },
   });
 

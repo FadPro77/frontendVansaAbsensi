@@ -24,7 +24,7 @@ export const register = async (request) => {
     {
       method: "POST",
       body: formData,
-    }
+    },
   );
 
   const result = await response.json();
@@ -63,5 +63,26 @@ export const profile = async () => {
   });
 
   const result = await response.json();
+  return result?.data;
+};
+
+export const changePassword = async (request) => {
+  const token = localStorage.getItem("token");
+  const response = await fetch(
+    `${import.meta.env.VITE_API_URL}/auth/change-password`,
+    {
+      method: "PUT",
+      headers: {
+        authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    },
+  );
+
+  const result = await response.json();
+  if (!result?.success) {
+    throw new Error(result?.message);
+  }
   return result?.data;
 };
