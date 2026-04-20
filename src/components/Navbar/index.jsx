@@ -7,17 +7,24 @@ import Image from "react-bootstrap/Image";
 import Dropdown from "react-bootstrap/Dropdown";
 import { Link, useNavigate } from "@tanstack/react-router";
 import logoNav from "../../assets/img/logoNoBg.png";
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setToken, setUser } from "../../redux/slices/auth";
-import { profile } from "../../service/auth";
-import { useQuery } from "@tanstack/react-query";
+import { profile, changePassword } from "../../service/auth";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { Modal, Form, Button } from "react-bootstrap";
 import "./navbar.css";
 
 const NavigationBar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user, token } = useSelector((state) => state.auth);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+
+  const [passwordForm, setPasswordForm] = useState({
+    newPassword: "",
+    confirmPassword: "",
+  });
 
   const handleLogout = useCallback(() => {
     dispatch(setUser(null));
@@ -43,6 +50,33 @@ const NavigationBar = () => {
     event.preventDefault();
 
     handleLogout();
+  };
+
+  const handlePasswordChange = (e) => {
+    setPasswordForm({
+      ...passwordForm,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const { mutate: changePasswordMutate, isPending } = useMutation({
+    mutationFn: changePassword,
+    onSuccess: () => {
+      alert("Password berhasil diubah");
+      setShowPasswordModal(false);
+      setPasswordForm({
+        newPassword: "",
+        confirmPassword: "",
+      });
+    },
+    onError: (err) => {
+      alert(err.message);
+    },
+  });
+
+  const handleSubmitPassword = (e) => {
+    e.preventDefault();
+    changePasswordMutate(passwordForm);
   };
 
   return (
@@ -114,6 +148,16 @@ const NavigationBar = () => {
                 >
                   Cuti
                 </Nav.Link>
+                {user && user.role === 1 && (
+                  <Nav.Link
+                    as={Link}
+                    to="/employee"
+                    style={{ cursor: "pointer" }}
+                    className="fw-bold text-white me-5"
+                  >
+                    Pegawai
+                  </Nav.Link>
+                )}
               </Nav>
               <Nav>
                 {user ? (
@@ -144,6 +188,50 @@ const NavigationBar = () => {
                     </Dropdown.Toggle>
 
                     <Dropdown.Menu>
+                      <Dropdown.Item onClick={() => setShowPasswordModal(true)}>
+                        Change Password
+                      </Dropdown.Item>
+
+                      <Modal
+                        show={showPasswordModal}
+                        onHide={() => setShowPasswordModal(false)}
+                        centered
+                      >
+                        <Modal.Header closeButton>
+                          <Modal.Title>Change Password</Modal.Title>
+                        </Modal.Header>
+
+                        <Modal.Body>
+                          <Form onSubmit={handleSubmitPassword}>
+                            <Form.Group className="mb-3">
+                              <Form.Label>Password Baru</Form.Label>
+                              <Form.Control
+                                type="password"
+                                name="newPassword"
+                                value={passwordForm.newPassword}
+                                onChange={handlePasswordChange}
+                                required
+                              />
+                            </Form.Group>
+
+                            <Form.Group className="mb-3">
+                              <Form.Label>Konfirmasi Password</Form.Label>
+                              <Form.Control
+                                type="password"
+                                name="confirmPassword"
+                                value={passwordForm.confirmPassword}
+                                onChange={handlePasswordChange}
+                                required
+                              />
+                            </Form.Group>
+
+                            <Button type="submit" disabled={isPending}>
+                              {isPending ? "Loading..." : "Simpan"}
+                            </Button>
+                          </Form>
+                        </Modal.Body>
+                      </Modal>
+
                       <Dropdown.Item onClick={logout}>Logout</Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>

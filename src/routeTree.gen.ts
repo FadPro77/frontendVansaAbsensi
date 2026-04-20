@@ -13,11 +13,11 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as EmployeeImport } from './routes/employee'
 
 // Create Virtual Routes
 
 const UserLazyImport = createFileRoute('/user')()
-const RegisterLazyImport = createFileRoute('/register')()
 const PresensiLazyImport = createFileRoute('/presensi')()
 const LoginLazyImport = createFileRoute('/login')()
 const LeavesLazyImport = createFileRoute('/leaves')()
@@ -30,12 +30,6 @@ const UserLazyRoute = UserLazyImport.update({
   path: '/user',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/user.lazy').then((d) => d.Route))
-
-const RegisterLazyRoute = RegisterLazyImport.update({
-  id: '/register',
-  path: '/register',
-  getParentRoute: () => rootRoute,
-} as any).lazy(() => import('./routes/register.lazy').then((d) => d.Route))
 
 const PresensiLazyRoute = PresensiLazyImport.update({
   id: '/presensi',
@@ -55,6 +49,12 @@ const LeavesLazyRoute = LeavesLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/leaves.lazy').then((d) => d.Route))
 
+const EmployeeRoute = EmployeeImport.update({
+  id: '/employee',
+  path: '/employee',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const IndexLazyRoute = IndexLazyImport.update({
   id: '/',
   path: '/',
@@ -70,6 +70,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexLazyImport
+      parentRoute: typeof rootRoute
+    }
+    '/employee': {
+      id: '/employee'
+      path: '/employee'
+      fullPath: '/employee'
+      preLoaderRoute: typeof EmployeeImport
       parentRoute: typeof rootRoute
     }
     '/leaves': {
@@ -93,13 +100,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PresensiLazyImport
       parentRoute: typeof rootRoute
     }
-    '/register': {
-      id: '/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof RegisterLazyImport
-      parentRoute: typeof rootRoute
-    }
     '/user': {
       id: '/user'
       path: '/user'
@@ -114,63 +114,63 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
+  '/employee': typeof EmployeeRoute
   '/leaves': typeof LeavesLazyRoute
   '/login': typeof LoginLazyRoute
   '/presensi': typeof PresensiLazyRoute
-  '/register': typeof RegisterLazyRoute
   '/user': typeof UserLazyRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
+  '/employee': typeof EmployeeRoute
   '/leaves': typeof LeavesLazyRoute
   '/login': typeof LoginLazyRoute
   '/presensi': typeof PresensiLazyRoute
-  '/register': typeof RegisterLazyRoute
   '/user': typeof UserLazyRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexLazyRoute
+  '/employee': typeof EmployeeRoute
   '/leaves': typeof LeavesLazyRoute
   '/login': typeof LoginLazyRoute
   '/presensi': typeof PresensiLazyRoute
-  '/register': typeof RegisterLazyRoute
   '/user': typeof UserLazyRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/leaves' | '/login' | '/presensi' | '/register' | '/user'
+  fullPaths: '/' | '/employee' | '/leaves' | '/login' | '/presensi' | '/user'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/leaves' | '/login' | '/presensi' | '/register' | '/user'
+  to: '/' | '/employee' | '/leaves' | '/login' | '/presensi' | '/user'
   id:
     | '__root__'
     | '/'
+    | '/employee'
     | '/leaves'
     | '/login'
     | '/presensi'
-    | '/register'
     | '/user'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
+  EmployeeRoute: typeof EmployeeRoute
   LeavesLazyRoute: typeof LeavesLazyRoute
   LoginLazyRoute: typeof LoginLazyRoute
   PresensiLazyRoute: typeof PresensiLazyRoute
-  RegisterLazyRoute: typeof RegisterLazyRoute
   UserLazyRoute: typeof UserLazyRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
+  EmployeeRoute: EmployeeRoute,
   LeavesLazyRoute: LeavesLazyRoute,
   LoginLazyRoute: LoginLazyRoute,
   PresensiLazyRoute: PresensiLazyRoute,
-  RegisterLazyRoute: RegisterLazyRoute,
   UserLazyRoute: UserLazyRoute,
 }
 
@@ -185,15 +185,18 @@ export const routeTree = rootRoute
       "filePath": "__root.jsx",
       "children": [
         "/",
+        "/employee",
         "/leaves",
         "/login",
         "/presensi",
-        "/register",
         "/user"
       ]
     },
     "/": {
       "filePath": "index.lazy.jsx"
+    },
+    "/employee": {
+      "filePath": "employee.jsx"
     },
     "/leaves": {
       "filePath": "leaves.lazy.jsx"
@@ -203,9 +206,6 @@ export const routeTree = rootRoute
     },
     "/presensi": {
       "filePath": "presensi.lazy.jsx"
-    },
-    "/register": {
-      "filePath": "register.lazy.jsx"
     },
     "/user": {
       "filePath": "user.lazy.jsx"
