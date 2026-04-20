@@ -19,6 +19,7 @@ import {
   createAbsent,
   updateAbsent,
 } from "../../service/absent";
+import { IoSwapVerticalSharp } from "react-icons/io5";
 import { useSelector } from "react-redux";
 
 const ScreenPresensi = () => {
@@ -39,7 +40,6 @@ const ScreenPresensi = () => {
   const mutationUpdateAbsent = useMutation({
     mutationFn: ({ id, payload }) => updateAbsent(id, payload),
     onSuccess: () => {
-      // Refresh data absensi
       queryClient.invalidateQueries(["absent"]);
     },
     onError: (err) => {
@@ -48,7 +48,6 @@ const ScreenPresensi = () => {
   });
 
   const handleAbsentPulang = (item) => {
-    // Jika sudah pulang, jangan izinkan update lagi
     if (item.jam_keluar) {
       alert("Anda sudah melakukan absensi pulang hari ini.");
       return;
@@ -116,13 +115,11 @@ const ScreenPresensi = () => {
   useEffect(() => {
     if (isSuccess) {
       if (Array.isArray(data)) {
-        // Jika role == 1 → admin → tampilkan semua
         if (user?.role === 1) {
           setAbsent(data);
         } else {
-          // Jika bukan admin → filter sesuai pegawai login
           const filtered = data.filter(
-            (item) => item.pegawaiId === user?.pegawai?.id
+            (item) => item.pegawaiId === user?.pegawai?.id,
           );
           setAbsent(filtered);
         }
@@ -190,32 +187,32 @@ const ScreenPresensi = () => {
                         <th style={{ cursor: "pointer" }}>
                           Jam Masuk
                           <span
-                            className="ms-2 text-primary"
+                            className="ms-2"
                             onClick={() =>
                               setSortBy(
                                 sortBy === "masuk-asc"
                                   ? "masuk-desc"
-                                  : "masuk-asc"
+                                  : "masuk-asc",
                               )
                             }
                           >
-                            ⇅
+                            <IoSwapVerticalSharp size={20} />
                           </span>
                         </th>
 
                         <th style={{ cursor: "pointer" }}>
                           Jam Pulang
                           <span
-                            className="ms-2 text-primary"
+                            className="ms-2"
                             onClick={() =>
                               setSortBy(
                                 sortBy === "pulang-asc"
                                   ? "pulang-desc"
-                                  : "pulang-asc"
+                                  : "pulang-asc",
                               )
                             }
                           >
-                            ⇅
+                            <IoSwapVerticalSharp size={20} />
                           </span>
                         </th>
 
@@ -237,7 +234,7 @@ const ScreenPresensi = () => {
                               {item.jam_masuk
                                 ? new Date(item.jam_masuk).toLocaleTimeString(
                                     "id-ID",
-                                    { hour12: false }
+                                    { hour12: false },
                                   )
                                 : "-"}
                             </td>
@@ -246,7 +243,7 @@ const ScreenPresensi = () => {
                               {item.jam_keluar
                                 ? new Date(item.jam_keluar).toLocaleTimeString(
                                     "id-ID",
-                                    { hour12: false }
+                                    { hour12: false },
                                   )
                                 : "-"}
                             </td>

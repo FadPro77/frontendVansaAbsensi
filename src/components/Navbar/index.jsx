@@ -13,6 +13,7 @@ import { setToken, setUser } from "../../redux/slices/auth";
 import { profile, changePassword } from "../../service/auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Modal, Form, Button } from "react-bootstrap";
+import { IoEyeOutline, IoEyeOffOutline, IoArrowBack } from "react-icons/io5";
 import "./navbar.css";
 
 const NavigationBar = () => {
@@ -20,6 +21,10 @@ const NavigationBar = () => {
   const navigate = useNavigate();
   const { user, token } = useSelector((state) => state.auth);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [icon, setIcon] = useState(<IoEyeOffOutline />);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const [passwordForm, setPasswordForm] = useState({
     newPassword: "",
@@ -76,7 +81,38 @@ const NavigationBar = () => {
 
   const handleSubmitPassword = (e) => {
     e.preventDefault();
+
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      alert("Password tidak sama");
+      return;
+    }
+
+    setShowPasswordModal(false);
+
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmChangePassword = () => {
     changePasswordMutate(passwordForm);
+    setShowConfirmModal(false);
+  };
+
+  const togglePassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  const handleEyeToggle = () => {
+    if (type === "password") {
+      setType("text");
+      setIcon(<IoEyeOutline />);
+    } else {
+      setType("password");
+      setIcon(<IoEyeOffOutline />);
+    }
   };
 
   return (
@@ -189,7 +225,7 @@ const NavigationBar = () => {
 
                     <Dropdown.Menu>
                       <Dropdown.Item onClick={() => setShowPasswordModal(true)}>
-                        Change Password
+                        Ganti Password
                       </Dropdown.Item>
 
                       <Modal
@@ -198,31 +234,65 @@ const NavigationBar = () => {
                         centered
                       >
                         <Modal.Header closeButton>
-                          <Modal.Title>Change Password</Modal.Title>
+                          <Modal.Title>Ganti Password</Modal.Title>
                         </Modal.Header>
 
                         <Modal.Body>
                           <Form onSubmit={handleSubmitPassword}>
-                            <Form.Group className="mb-3">
+                            <Form.Group className="mb-3 position-relative">
                               <Form.Label>Password Baru</Form.Label>
                               <Form.Control
-                                type="password"
+                                type={showPassword ? "text" : "password"}
                                 name="newPassword"
                                 value={passwordForm.newPassword}
                                 onChange={handlePasswordChange}
                                 required
                               />
+
+                              <span
+                                onClick={togglePassword}
+                                style={{
+                                  position: "absolute",
+                                  top: "70%",
+                                  right: "10px",
+                                  transform: "translateY(-50%)",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                {showPassword ? (
+                                  <IoEyeOutline />
+                                ) : (
+                                  <IoEyeOffOutline />
+                                )}
+                              </span>
                             </Form.Group>
 
-                            <Form.Group className="mb-3">
+                            <Form.Group className="mb-3 position-relative">
                               <Form.Label>Konfirmasi Password</Form.Label>
                               <Form.Control
-                                type="password"
+                                type={showConfirmPassword ? "text" : "password"}
                                 name="confirmPassword"
                                 value={passwordForm.confirmPassword}
                                 onChange={handlePasswordChange}
                                 required
                               />
+
+                              <span
+                                onClick={toggleConfirmPassword}
+                                style={{
+                                  position: "absolute",
+                                  top: "70%",
+                                  right: "10px",
+                                  transform: "translateY(-50%)",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                {showConfirmPassword ? (
+                                  <IoEyeOutline />
+                                ) : (
+                                  <IoEyeOffOutline />
+                                )}
+                              </span>
                             </Form.Group>
 
                             <Button type="submit" disabled={isPending}>
@@ -232,6 +302,40 @@ const NavigationBar = () => {
                         </Modal.Body>
                       </Modal>
 
+                      <Modal
+                        show={showConfirmModal}
+                        onHide={() => setShowConfirmModal(false)}
+                        centered
+                        size="sm"
+                      >
+                        <Modal.Header closeButton>
+                          <Modal.Title>Konfirmasi</Modal.Title>
+                        </Modal.Header>
+
+                        <Modal.Body className="text-center">
+                          Apakah Anda yakin ingin mengubah password?
+                        </Modal.Body>
+
+                        <Modal.Footer className="justify-content-center">
+                          <Button
+                            variant="secondary"
+                            onClick={() => setShowConfirmModal(false)}
+                            size="m"
+                          >
+                            Batal
+                          </Button>
+
+                          <Button
+                            variant="danger"
+                            onClick={handleConfirmChangePassword}
+                            disabled={isPending}
+                            size="m"
+                            className="ms-2"
+                          >
+                            {isPending ? "Loading..." : "Ubah"}
+                          </Button>
+                        </Modal.Footer>
+                      </Modal>
                       <Dropdown.Item onClick={logout}>Logout</Dropdown.Item>
                     </Dropdown.Menu>
                   </Dropdown>
