@@ -150,7 +150,7 @@ const ScreenLeaves = () => {
           setLeaves(data);
         } else {
           const filtered = data.filter(
-            (item) => item.pegawaiId === user?.pegawai?.id
+            (item) => item.pegawaiId === user?.pegawai?.id,
           );
           setLeaves(filtered);
         }
@@ -288,7 +288,7 @@ const ScreenLeaves = () => {
         </Container>
       </section>
 
-      <section style={{ marginTop: "5rem", marginBottom: "10rem" }}>
+      <section style={{ marginBottom: "10rem" }}>
         <Container>
           <Row>
             <Col>
@@ -333,12 +333,12 @@ const ScreenLeaves = () => {
                                 >
                                   <option value="menunggu">Menunggu</option>
                                   <option value="disetujui">Disetujui</option>
-                                  <option value="tolak">Tolak</option>
+                                  <option value="ditolak">Ditolak</option>
                                 </select>
                               ) : (
                                 <span
                                   className={getStatusColor(
-                                    item.status_pengajuan
+                                    item.status_pengajuan,
                                   )}
                                 >
                                   {item.status_pengajuan}

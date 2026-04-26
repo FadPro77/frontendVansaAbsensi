@@ -8,12 +8,12 @@ import Protected from "../components/Auth/Protected";
 export const Route = createLazyFileRoute("/presensi")({
   component: () => (
     <Protected roles={[1, 2]}>
-      <Index />
+      <Presensi />
     </Protected>
   ),
 });
 
-function Index() {
+function Presensi() {
   const [openPresensi, setOpenPresensi] = useState(true);
 
   return (

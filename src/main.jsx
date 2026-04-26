@@ -25,6 +25,6 @@ if (!rootElement.innerHTML) {
           <Toaster position="top-right" />
         </QueryClientProvider>
       </Provider>
-    </StrictMode>
+    </StrictMode>,
   );
 }

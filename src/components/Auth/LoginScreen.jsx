@@ -1,12 +1,13 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setToken } from "../../redux/slices/auth";
+import { setToken, setUser } from "../../redux/slices/auth";
 import { login } from "../../service/auth";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Form, InputGroup } from "react-bootstrap";
 import logo from "../../assets/img/logo2.jpg";
+import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 
 function LoginScreen() {
   const dispatch = useDispatch();
@@ -14,6 +15,8 @@ function LoginScreen() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { token } = useSelector((state) => state.auth);
+  const [showPassword, setShowPassword] = useState(false);
+  const [icon, setIcon] = useState(<IoEyeOffOutline />);
 
   if (token) {
     navigate({ to: "/" });
@@ -32,6 +35,7 @@ function LoginScreen() {
         },
       });
       dispatch(setToken(data?.token));
+      dispatch(setUser(data?.user));
       setTimeout(() => {
         navigate({ to: "/" });
       }, 3000);
@@ -55,6 +59,20 @@ function LoginScreen() {
   const onSubmit = (e) => {
     e.preventDefault();
     loginUser({ username, password });
+  };
+
+  const togglePassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleEyeToggle = () => {
+    if (type === "password") {
+      setType("text");
+      setIcon(<IoEyeOutline />);
+    } else {
+      setType("password");
+      setIcon(<IoEyeOffOutline />);
+    }
   };
 
   return (
@@ -97,17 +115,26 @@ function LoginScreen() {
                 />
               </div>
 
-              <div className="mb-4 text-white">
-                <label className="block mb-1">Password</label>
-                <input
-                  type="password"
-                  placeholder="Enter password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="w-full px-3 py-2 rounded-lg bg-white outline-none"
-                />
-              </div>
+              <Form.Group className="mb-4 text-white">
+                <Form.Label>Password</Form.Label>
+
+                <InputGroup>
+                  <Form.Control
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+
+                  <InputGroup.Text
+                    onClick={togglePassword}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {showPassword ? <IoEyeOutline /> : <IoEyeOffOutline />}
+                  </InputGroup.Text>
+                </InputGroup>
+              </Form.Group>
 
               <div className="text-center">
                 <button
