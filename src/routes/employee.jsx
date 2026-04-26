@@ -7,13 +7,13 @@ import Protected from "../components/Auth/Protected";
 
 export const Route = createFileRoute("/employee")({
   component: () => (
-    <Protected roles={[1, 2]}>
-      <Index />
+    <Protected roles={[1]}>
+      <Employee />
     </Protected>
   ),
 });
 
-function Index() {
+function Employee() {
   const [openEmployee, setOpenEmployee] = useState(true);
 
   return (

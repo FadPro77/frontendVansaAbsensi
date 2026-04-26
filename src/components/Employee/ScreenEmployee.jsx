@@ -10,6 +10,7 @@ import {
   Table,
   Form,
   Modal,
+  InputGroup,
 } from "react-bootstrap";
 import { motion } from "motion/react";
 import React, { useEffect, useState } from "react";
@@ -25,7 +26,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../redux/slices/auth";
 import { useNavigate } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
-import { IoDocumentText, IoSwapVerticalSharp } from "react-icons/io5";
+import {
+  IoDocumentText,
+  IoSwapVerticalSharp,
+  IoEyeOutline,
+  IoEyeOffOutline,
+} from "react-icons/io5";
 
 const ScreenEmployee = () => {
   const { token } = useSelector((state) => state.auth);
@@ -43,6 +49,8 @@ const ScreenEmployee = () => {
   const [sortNip, setSortNip] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const [showPassword, setShowPassword] = useState(false);
+  const [icon, setIcon] = useState(<IoEyeOffOutline />);
 
   const [employeeForm, setEmployeeForm] = useState({
     nip: "",
@@ -215,6 +223,20 @@ const ScreenEmployee = () => {
     startIndex + itemsPerPage,
   );
 
+  const togglePassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleEyeToggle = () => {
+    if (type === "password") {
+      setType("text");
+      setIcon(<IoEyeOutline />);
+    } else {
+      setType("password");
+      setIcon(<IoEyeOffOutline />);
+    }
+  };
+
   useEffect(() => {
     setCurrentPage(1);
   }, [searchNama, searchNip, sortNip]);
@@ -281,14 +303,7 @@ const ScreenEmployee = () => {
 
                   <Form.Group className="mb-3">
                     <Form.Label>Status</Form.Label>
-                    <Form.Select
-                      name="status"
-                      value={employeeForm.status}
-                      onChange={handleEmployeeChange}
-                    >
-                      <option value="aktif">Aktif</option>
-                      <option value="nonaktif">Nonaktif</option>
-                    </Form.Select>
+                    <Form.Control type="text" value="aktif" disabled />
                   </Form.Group>
 
                   <Form.Group className="mb-3">
@@ -302,7 +317,7 @@ const ScreenEmployee = () => {
                   </Form.Group>
 
                   <Form.Group className="mb-3">
-                    <Form.Label>Foto (URL)</Form.Label>
+                    <Form.Label>Foto</Form.Label>
                     <Form.Control
                       type="file"
                       name="foto"
@@ -355,13 +370,23 @@ const ScreenEmployee = () => {
 
                   <Form.Group className="mb-3">
                     <Form.Label>Password</Form.Label>
-                    <Form.Control
-                      type="password"
-                      name="password"
-                      value={form.password}
-                      onChange={handleChange}
-                      required
-                    />
+                    <InputGroup>
+                      <Form.Control
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        placeholder="Enter password"
+                        value={form.password}
+                        onChange={handleChange}
+                        required
+                      />
+
+                      <InputGroup.Text
+                        onClick={togglePassword}
+                        style={{ cursor: "pointer" }}
+                      >
+                        {showPassword ? <IoEyeOutline /> : <IoEyeOffOutline />}
+                      </InputGroup.Text>
+                    </InputGroup>
                   </Form.Group>
 
                   <Button type="submit">Simpan</Button>
@@ -451,29 +476,26 @@ const ScreenEmployee = () => {
                     ))}
                   </tbody>
                 </Table>
-                <div className="d-flex justify-content-between align-items-center mt-3">
+                <div className="d-flex justify-content-center align-items-center mt-3 gap-3">
+                  <Button
+                    variant="secondary"
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage((prev) => prev - 1)}
+                  >
+                    Previous
+                  </Button>
+
                   <span>
                     Halaman {currentPage} dari {totalPages || 1}
                   </span>
 
-                  <div>
-                    <Button
-                      variant="secondary"
-                      className="me-2"
-                      disabled={currentPage === 1}
-                      onClick={() => setCurrentPage((prev) => prev - 1)}
-                    >
-                      Previous
-                    </Button>
-
-                    <Button
-                      variant="primary"
-                      disabled={currentPage === totalPages || totalPages === 0}
-                      onClick={() => setCurrentPage((prev) => prev + 1)}
-                    >
-                      Next
-                    </Button>
-                  </div>
+                  <Button
+                    variant="primary"
+                    disabled={currentPage === totalPages || totalPages === 0}
+                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                  >
+                    Next
+                  </Button>
                 </div>
                 <Modal
                   show={showEditModal}
@@ -560,7 +582,6 @@ const ScreenEmployee = () => {
                     </Form>
                   </Modal.Body>
                 </Modal>
-                ;
               </Card.Body>
             </Card>
           </Col>

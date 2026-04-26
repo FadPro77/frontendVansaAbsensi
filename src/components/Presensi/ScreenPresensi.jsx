@@ -30,6 +30,8 @@ const ScreenPresensi = () => {
   const [filterDate, setFilterDate] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [sortBy, setSortBy] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const { data, isSuccess, isError } = useQuery({
     queryKey: ["absent"],
@@ -97,6 +99,13 @@ const ScreenPresensi = () => {
   });
 
   const sortedAbsent = [...filteredAbsent].sort((a, b) => {
+    if (sortBy === "tanggal-asc") {
+      return new Date(a.tanggal) - new Date(b.tanggal);
+    }
+    if (sortBy === "tanggal-desc") {
+      return new Date(b.tanggal) - new Date(a.tanggal);
+    }
+
     if (sortBy === "masuk-asc") {
       return new Date(a.jam_masuk || 0) - new Date(b.jam_masuk || 0);
     }
@@ -109,6 +118,7 @@ const ScreenPresensi = () => {
     if (sortBy === "pulang-desc") {
       return new Date(b.jam_keluar || 0) - new Date(a.jam_keluar || 0);
     }
+
     return 0;
   });
 
@@ -129,6 +139,18 @@ const ScreenPresensi = () => {
       }
     }
   }, [data, isSuccess, user]);
+
+  const totalPages = Math.ceil(sortedAbsent.length / itemsPerPage);
+
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedData = sortedAbsent.slice(
+    startIndex,
+    startIndex + itemsPerPage,
+  );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchName, filterDate, filterStatus, sortBy]);
 
   return (
     <>
@@ -183,7 +205,21 @@ const ScreenPresensi = () => {
                       <tr className="text-center">
                         <th>No</th>
                         {user?.role == 1 && <th>Nama Pegawai</th>}
-                        <th>Tanggal</th>
+                        <th style={{ cursor: "pointer" }}>
+                          Tanggal
+                          <span
+                            className="ms-2"
+                            onClick={() =>
+                              setSortBy(
+                                sortBy === "tanggal-asc"
+                                  ? "tanggal-desc"
+                                  : "tanggal-asc",
+                              )
+                            }
+                          >
+                            <IoSwapVerticalSharp size={20} />
+                          </span>
+                        </th>
                         <th style={{ cursor: "pointer" }}>
                           Jam Masuk
                           <span
@@ -223,9 +259,9 @@ const ScreenPresensi = () => {
 
                     <tbody>
                       {sortedAbsent.length > 0 ? (
-                        sortedAbsent.map((item, index) => (
+                        paginatedData.map((item, index) => (
                           <tr key={item.id} className="text-center">
-                            <td>{index + 1}</td>
+                            <td>{startIndex + index + 1}</td>
                             {user?.role == 1 && (
                               <td>{item.pegawai?.nama || "-"}</td>
                             )}
@@ -274,7 +310,7 @@ const ScreenPresensi = () => {
                                   variant="danger"
                                   size="sm"
                                   onClick={() => handleAbsentPulang(item)}
-                                  disabled={!!item.jam_keluar} // disable jika sudah pulang
+                                  disabled={!!item.jam_keluar}
                                 >
                                   {item.jam_keluar
                                     ? "Sudah Pulang"
@@ -293,6 +329,27 @@ const ScreenPresensi = () => {
                       )}
                     </tbody>
                   </Table>
+                  <div className="d-flex justify-content-center align-items-center mt-3 gap-3">
+                    <Button
+                      variant="secondary"
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage((prev) => prev - 1)}
+                    >
+                      Previous
+                    </Button>
+
+                    <span>
+                      Halaman {currentPage} dari {totalPages || 1}
+                    </span>
+
+                    <Button
+                      variant="primary"
+                      disabled={currentPage === totalPages || totalPages === 0}
+                      onClick={() => setCurrentPage((prev) => prev + 1)}
+                    >
+                      Next
+                    </Button>
+                  </div>
                 </Card.Body>
               </Card>
             </Col>
